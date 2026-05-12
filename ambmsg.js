@@ -299,7 +299,11 @@
             this._body = body;
 
             const z = nextZ();
-            if (backdrop) { backdrop.style.zIndex = z; backdrop.style.display = 'none'; document.body.append(backdrop); }
+            if (backdrop) {
+                backdrop.style.zIndex = z;
+                backdrop.style.display = 'none';
+                document.body.append(backdrop);
+            }
             wrapper.style.zIndex = z + 1;
             wrapper.style.display = 'none';
             document.body.append(wrapper);
@@ -351,7 +355,10 @@
             d.style.marginLeft = '';
             d.style.marginTop = '';
 
-            if (bd) { bd.style.display = ''; requestAnimationFrame(() => bd.classList.add('amb-show')); }
+            if (bd) {
+                bd.style.display = '';
+                requestAnimationFrame(() => bd.classList.add('amb-show'));
+            }
             w.style.display = '';
             requestAnimationFrame(() => w.classList.add('amb-show'));
 
@@ -407,7 +414,10 @@
             const done = () => {
                 w.classList.remove('amb-show');
                 w.style.display = 'none';
-                if (bd) { bd.classList.remove('amb-show'); bd.style.display = 'none'; }
+                if (bd) {
+                    bd.classList.remove('amb-show');
+                    bd.style.display = 'none';
+                }
                 
                 // برگرداندن اسکرول‌بار فقط زمانی که هیچ مودالی باز نباشد
                 if (_openModalCount <= 0) {
@@ -440,20 +450,19 @@
         config(options) { this.cfg = merge(this.cfg, options); return this; }
 
         dispose() {
-            this.hide();
             const removeDOM = () => {
                 if (this._wrapper) this._wrapper.remove();
                 if (this._backdrop) this._backdrop.remove();
                 _registry.delete(this._id);
-                window.removeEventListener('resize', this._resizeHandler); // پاکسازی نشت حافظه
+                window.removeEventListener('resize', this._resizeHandler);
             };
-            
-            // حذف امن المان‌ها پس از پایان انیمیشن
-            if (!this._visible) {
-                removeDOM();
-            } else {
+            if (this._visible) {
+                // حذف امن المان‌ها پس از پایان انیمیشن بستن
                 this._wrapper.addEventListener('hidden.amb.modal', removeDOM, { once: true });
-                setTimeout(removeDOM, this.cfg.duration + 100); // فال‌بک
+                setTimeout(removeDOM, this.cfg.duration + 100);
+                this.hide();
+            } else {
+                removeDOM();
             }
         }
 
@@ -489,6 +498,9 @@
     /* ══════════════ Public API ═════════════════ */
     const create = (id, options = {}) => {
         if (_registry.has(id)) return _registry.get(id);
+        // از ایجاد ID تکراری در DOM جلوگیری می‌کند
+        const existing = document.getElementById(id);
+        if (existing) return new Modal(existing, options);
         const src = document.createElement('div');
         src.id = id;
         src.style.display = 'none';
@@ -497,8 +509,12 @@
     };
 
     const open = (id, options) => {
-        const m = _registry.get(id) || create(id, options);
-        if (options) m.config(options);
+        let m = _registry.get(id);
+        if (!m) {
+            m = create(id, options);
+        } else if (options) {
+            m.config(options);
+        }
         if (!m._visible) m.show();
         return m;
     };
@@ -630,6 +646,13 @@
         return alertList({ type: 'info', title, messages, ...opts });
     };
 
+    /* ── alertSingle: نمایش یک پیام alert از نوع مشخص ─── */
+    const alertSingle = (type, title, message, opts = {}) => {
+        const typeTitle = title || (type === 'error' ? 'خطا!' : type === 'warning' ? 'هشدار!' : type === 'success' ? 'موفقیت!' : 'اطلاعات');
+        const fn = { error, warning, success, info }[type] || info;
+        fn(typeTitle, [message], opts);
+    };
+
     /* ── AmbToast ────────────────────────────────── */
     const AmbToast = {
         _container: null,
@@ -752,23 +775,12 @@
                 const btnText = attr(item, 'data-amb-alert-btn') || 'باشه';
 
                 setTimeout(() => {
-                    AlertSingle(type, title, message, { rtl, theme, btnText });
+                    alertSingle(type, title, message, { rtl, theme, btnText });
                 }, index * step);
             });
 
             container.remove();
         });
-
-        function AlertSingle(type, title, message, opts = {}) {
-            const messages = [message];
-            const typeTitle = title || (type === 'error' ? 'خطا!' : type === 'warning' ? 'هشدار!' : type === 'success' ? 'موفقیت!' : 'اطلاعات');
-
-            // اکنون توابع Global با امنیت کامل فراخوانی می‌شوند
-            if (type === 'error') AlertError(typeTitle, messages, opts);
-            else if (type === 'warning') AlertWarning(typeTitle, messages, opts);
-            else if (type === 'success') AlertSuccess(typeTitle, messages, opts);
-            else AlertInfo(typeTitle, messages, opts);
-        }
     };
 
     if (document.readyState === 'loading') {

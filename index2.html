@@ -361,7 +361,7 @@
         window.runJLoadDuplicateCheck = function(caseKey) {
             const test = jLoadTests[caseKey];
             if (!test) {
-                console.warn('[AmbMsg][jLoad Duplicate Test] Invalid case key | Received:', caseKey, '| Expected: caseA, caseB, caseC');
+                console.warn('[AmbMsg][jLoad Duplicate Test] Invalid case key | Received:', caseKey, '| Expected one of: caseA, caseB, or caseC');
                 return;
             }
 
@@ -395,7 +395,7 @@
                     });
 
                     if (idCount !== 1 || classCount !== 1 || attrCount !== 1) {
-                        console.error(`[AmbMsg][jLoad Duplicate Test][${caseKey}] Unexpected element count`, {
+                        console.error(`[AmbMsg][jLoad Duplicate Test][${caseKey}] Uniqueness constraint violated`, {
                             idCount,
                             classCount,
                             attrCount

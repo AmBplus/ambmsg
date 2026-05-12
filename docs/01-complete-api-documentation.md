@@ -1,6 +1,6 @@
 # 📚 AmbMsg Complete API Documentation
 
-> **Version 1.0 | MIT License | Zero Dependencies | Bootstrap 5.3 Compatible**
+> **Version 1.1 | MIT License | Zero Dependencies | Bootstrap 5.3 Compatible**
 
 AmbMsg is a lightweight, attribute-driven modal and toast framework with extensive customization options including 12 animations, 9 positions, 6 sizes, dark/light themes, RTL support, draggable modals, and much more.
 

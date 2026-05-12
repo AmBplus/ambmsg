@@ -1,29 +1,32 @@
-# 📚 AmbModal v1.0 — مستندات کامل
+# 📚 AmbMsg v1.1 — مستندات کامل فارسی
 
-> **یک فریم‌ورک مودال مبتنی بر Attribute، سازگار با Bootstrap 5.3 API**
-> 
-> MIT License | بدون وابستگی | سبک و قدرتمند
+> **فریم‌ورک مودال و Toast مبتنی بر Attribute — سازگار با Bootstrap 5.3 API**
+>
+> نسخه ۱.۱ | MIT License | بدون وابستگی | سبک و قدرتمند
 
 ---
 
 ## 📑 فهرست مطالب
 
 1. [شروع سریع](#شروع-سریع)
-2. [روش‌های استفاده](#روشهای-استفاده)
+2. [سه روش استفاده](#سه-روش-استفاده)
 3. [تنظیمات (Options)](#تنظیمات-options)
 4. [Attributeهای داده‌ای](#attributeهای-دادهای)
-5. [API جاوااسکریپت](#api-جاوااسکریپت)
-6. [انیمیشن‌ها](#انیمیشنها)
-7. [موقعیت‌ها (Positions)](#موقعیتها-positions)
-8. [سایزها (Sizes)](#سایزها-sizes)
-9. [تم‌ها (Themes)](#تمها-themes)
-10. [Backdrop & Keyboard](#backdrop--keyboard)
-11. [رویدادها (Events)](#رویدادها-events)
-12. [متدهای کمکی](#متدهای-کمکی)
-13. [Toast Timer](#toast-timer)
-14. [سفارشی‌سازی CSS](#سفارشیسازی-css)
-15. [سازگاری با Bootstrap](#سازگاری-با-bootstrap)
-16. [نمونه‌های کامل](#نمونههای-کامل)
+5. [API جاوااسکریپت — مودال](#api-جاوااسکریپت--مودال)
+6. [Toast — اعلان‌های خودکار](#toast--اعلانهای-خودکار)
+7. [Alert — پیام‌های هشدار](#alert--پیامهای-هشدار)
+8. [Confirm — تأیید عملیات](#confirm--تأیید-عملیات)
+9. [Container خودکار](#container-خودکار)
+10. [انیمیشن‌ها](#انیمیشنها)
+11. [موقعیت‌ها (Positions)](#موقعیتها-positions)
+12. [سایزها (Sizes)](#سایزها-sizes)
+13. [تم‌ها (Themes)](#تمها-themes)
+14. [پشتیبانی RTL فارسی/عربی](#پشتیبانی-rtl-فارسیعربی)
+15. [Loading State](#loading-state)
+16. [رویدادها و Callbackها](#رویدادها-و-callbackها)
+17. [سفارشی‌سازی CSS](#سفارشیسازی-css)
+18. [سازگاری با Bootstrap](#سازگاری-با-bootstrap)
+19. [نمونه‌های کامل](#نمونههای-کامل)
 
 ---
 
@@ -33,10 +36,10 @@
 
 ```html
 <!-- 1. اضافه کردن CSS -->
-<link rel="stylesheet" href="./ambmodal.css">
+<link rel="stylesheet" href="ambmsg.css">
 
 <!-- 2. اضافه کردن JavaScript قبل از بسته شدن body -->
-<script src="./ambmodal.js"></script>
+<script src="ambmsg.js"></script>
 ```
 
 ### ساده‌ترین مثال
@@ -44,22 +47,22 @@
 ```html
 <!-- دکمه trigger -->
 <button data-amb-toggle="modal" data-amb-target="#myModal">
-    Open Modal
+    باز کردن مودال
 </button>
 
 <!-- محتوای مودال (مخفی) -->
 <div id="myModal" style="display:none;"
      data-amb-title="عنوان مودال"
-     data-amb-footer="<button class='amb-btn amb-btn-primary' data-amb-dismiss='modal'>تایید</button>">
+     data-amb-footer='<button class="amb-btn amb-btn-primary" data-amb-dismiss="modal">تایید</button>'>
     <p>محتوای اصلی مودال اینجا قرار می‌گیرد.</p>
 </div>
 ```
 
 ---
 
-## روش‌های استفاده
+## سه روش استفاده
 
-AmbModal از **سه روش** مختلف پشتیبانی می‌کند:
+AmbMsg از **سه روش** مختلف پشتیبانی می‌کند:
 
 ### ۱. روش Attribute-Driven (بدون JavaScript)
 
@@ -84,7 +87,7 @@ AmbModal از **سه روش** مختلف پشتیبانی می‌کند:
 
 ```javascript
 // ایجاد و نمایش مستقیم
-AmbModal.open('my-modal-id', {
+AmbMsg.open('my-modal-id', {
     title: 'عنوان مودال',
     body: '<p>محتوای HTML</p>',
     footer: '<button class="amb-btn amb-btn-primary" data-amb-dismiss="modal">بستن</button>',
@@ -97,11 +100,11 @@ AmbModal.open('my-modal-id', {
 
 ```javascript
 // دریافت نمونه موجود یا ایجاد جدید
-const modal = AmbModal.Modal.getOrCreateInstance(document.getElementById('myModal'));
+const modal = AmbMsg.Modal.getOrCreateInstance(document.getElementById('myModal'));
 modal.show();
 
 // فقط دریافت نمونه موجود
-const existing = AmbModal.Modal.getInstance('myModal');
+const existing = AmbMsg.Modal.getInstance('myModal');
 ```
 
 ---
@@ -115,24 +118,25 @@ const existing = AmbModal.Modal.getInstance('myModal');
 | `title` | string | `''` | عنوان مودال (HTML مجاز است) |
 | `body` | string | `''` | محتوای اصلی (HTML مجاز است) |
 | `footer` | string | `''` | فوتر مودال (HTML مجاز است) |
-| `size` | string | `'md'` | سایز: `sm`, `md`, `lg`, `xl`, `xxl`, `full`, `custom` |
-| `position` | string | `'center'` | موقعیت: `center`, `top-left`, `top-center`, `top-right`, `center-left`, `center-right`, `bottom-left`, `bottom-center`, `bottom-right` |
+| `size` | string | `'md'` | `sm`, `md`, `lg`, `xl`, `xxl`, `full`, `custom` |
+| `position` | string | `'center'` | `center`, `top-left`, `top-center`, `top-right`, `center-left`, `center-right`, `bottom-left`, `bottom-center`, `bottom-right` |
 | `animOpen` | string | `'zoom-in'` | انیمیشن باز شدن |
 | `animClose` | string | `'zoom-out'` | انیمیشن بسته شدن |
 | `duration` | number | `300` | مدت زمان انیمیشن (میلی‌ثانیه) |
 | `easing` | string | `'ease-in-out'` | تابع easing |
-| `backdrop` | boolean/string | `true` | `true` = قابل کلیک, `'static'` = غیرقابل کلیک, `false` = بدون پس‌زمینه |
+| `backdrop` | boolean/string | `true` | `true` = قابل کلیک، `'static'` = غیرقابل کلیک، `false` = بدون پس‌زمینه |
 | `backdropColor` | string | `''` | رنگ سفارشی پس‌زمینه (مثال: `'rgba(0,0,0,.8)'`) |
 | `keyboard` | boolean | `true` | بسته شدن با کلید Escape |
 | `autoFocus` | boolean | `true` | فوکوس خودکار روی اولین المنت |
 | `autoClose` | number | `0` | بسته شدن خودکار بعد از X میلی‌ثانیه (0 = غیرفعال) |
 | `draggable` | boolean | `false` | قابلیت جابجایی با موس/تاچ |
-| `rtl` | boolean | `false` | راست به چپ |
+| `rtl` | boolean | `false` | راست به چپ (فارسی/عربی) |
 | `theme` | string | `''` | تم: `''` (روشن) یا `'dark'` |
-| `width` | string | `''` | عرض سفارشی (مثال: `'650px'`, `'80vw'`) |
+| `width` | string | `''` | عرض سفارشی (مثال: `'650px'`) |
 | `mobileBreakpoint` | number | `576` | breakpoint موبایل (پیکسل) |
 | `mobileSize` | string | `''` | سایز در موبایل (مثال: `'full'`) |
 | `noDefaultStyle` | boolean | `false` | حذف استایل‌های پیش‌فرض |
+| `alertType` | string | `''` | نوع هدر هشدار: `success`, `error`, `warning`, `info` |
 
 ### Callbackها
 
@@ -150,35 +154,33 @@ const existing = AmbModal.Modal.getInstance('myModal');
 
 تمامی تنظیمات از طریق `data-amb-*` attributes قابل تنظیم هستند:
 
-```html
-<div id="myModal"
-     data-amb-title="عنوان مودال"
-     data-amb-size="lg"
-     data-amb-position="top-center"
-     data-amb-anim-open="slide-up"
-     data-amb-anim-close="slide-down"
-     data-amb-duration="500"
-     data-amb-easing="ease-out"
-     data-amb-backdrop="static"
-     data-amb-backdrop-color="rgba(0,0,0,.9)"
-     data-amb-keyboard="false"
-     data-amb-auto-focus="false"
-     data-amb-auto-close="5000"
-     data-amb-draggable="true"
-     data-amb-rtl="true"
-     data-amb-theme="dark"
-     data-amb-width="700px"
-     data-amb-mobile-breakpoint="768"
-     data-amb-mobile-size="full"
-     data-amb-no-default-style>
-    <!-- محتوا -->
-</div>
-```
+| Attribute | مقادیر | پیش‌فرض | توضیح |
+|-----------|--------|---------|--------|
+| `data-amb-title` | رشته | `''` | عنوان مودال |
+| `data-amb-size` | `sm` `md` `lg` `xl` `xxl` `full` `custom` | `md` | سایز |
+| `data-amb-position` | نام موقعیت | `center` | موقعیت |
+| `data-amb-anim-open` | نام انیمیشن | `zoom-in` | انیمیشن باز |
+| `data-amb-anim-close` | نام انیمیشن | `zoom-out` | انیمیشن بسته |
+| `data-amb-duration` | عدد (ms) | `300` | مدت انیمیشن |
+| `data-amb-easing` | CSS easing | `ease-in-out` | easing |
+| `data-amb-backdrop` | `true` `false` `static` | `true` | backdrop |
+| `data-amb-backdrop-color` | رنگ CSS | `''` | رنگ backdrop |
+| `data-amb-keyboard` | `true` `false` | `true` | کلید Escape |
+| `data-amb-auto-focus` | `true` `false` | `true` | فوکوس خودکار |
+| `data-amb-auto-close` | عدد (ms) | `0` | بسته شدن خودکار |
+| `data-amb-draggable` | `true` `false` | `false` | قابل جابجایی |
+| `data-amb-rtl` | `true` `false` | `false` | راست به چپ |
+| `data-amb-theme` | `dark` `''` | `''` | تم |
+| `data-amb-width` | عرض CSS | `''` | عرض سفارشی |
+| `data-amb-mobile-breakpoint` | عدد (px) | `576` | breakpoint موبایل |
+| `data-amb-mobile-size` | نام سایز | `''` | سایز در موبایل |
+| `data-amb-no-default-style` | (وجود attribute) | `false` | حذف استایل |
+| `data-amb-footer` | HTML | `''` | محتوای فوتر |
 
 ### دکمه‌های Trigger
 
 ```html
-<!-- استاندارد -->
+<!-- روش استاندارد -->
 <button data-amb-toggle="modal" data-amb-target="#myModal">
     Open
 </button>
@@ -192,449 +194,451 @@ const existing = AmbModal.Modal.getInstance('myModal');
 ### دکمه‌های Dismiss
 
 ```html
-<!-- در فوتر -->
+<!-- بستن مودال -->
 <button data-amb-dismiss="modal">بستن</button>
-
-<!-- در هر جای محتوا -->
-<button class="amb-btn amb-btn-outline" data-amb-dismiss="modal">
-    Cancel
-</button>
 ```
 
 ---
 
-## API جاوااسکریپت
+## API جاوااسکریپت — مودال
 
-### AmbModal (Global Object)
+### متدهای سراسری
 
 ```javascript
-const Amb = window.AmbModal;
+// ایجاد و باز کردن مودال
+AmbMsg.open(id, options);
+
+// ایجاد بدون باز کردن
+AmbMsg.create(id, options);
+
+// بستن مودال
+AmbMsg.close(id);
+
+// حذف کامل مودال از DOM
+AmbMsg.destroy(id);
+
+// تنظیم پیش‌فرض‌های سراسری
+AmbMsg.config({ size: 'lg', theme: 'dark' });
 ```
 
-### متدهای اصلی
-
-#### `AmbModal.open(id, options)`
-ایجاد و/یا نمایش یک مودال
+### متدهای Instance
 
 ```javascript
-const modal = AmbModal.open('my-modal', {
-    title: 'ثبت نام',
-    body: '<form>...</form>',
-    footer: '<button class="amb-btn amb-btn-primary">ارسال</button>',
+const modal = AmbMsg.open('my-modal', { title: 'عنوان' });
+
+modal.show();               // نمایش
+modal.hide();               // مخفی
+modal.toggle();             // toggle
+modal.dispose();            // حذف کامل
+modal.setLoading(true);     // نمایش spinner
+modal.setLoading(false);    // مخفی spinner
+modal.config(options);      // بروزرسانی تنظیمات
+
+// پراپرتی‌ها
+modal.isVisible;            // boolean
+modal.element;              // المنت wrapper
+modal.id;                   // شناسه مودال
+modal._body;                // المنت body (برای بروزرسانی محتوا)
+modal._dialog;              // المنت dialog
+```
+
+### Bootstrap Compatible
+
+```javascript
+// مانند Bootstrap 5.3
+const modal = AmbMsg.Modal.getInstance('myModal');
+const modal2 = AmbMsg.Modal.getOrCreateInstance('myModal', options);
+```
+
+---
+
+## Toast — اعلان‌های خودکار
+
+Toast ها پیام‌های کوچک خودکار هستند که در گوشه صفحه نمایش داده می‌شوند و بعد از مدتی ناپدید می‌شوند.
+
+### روش‌های Toast
+
+```javascript
+// متدهای AmbMsg.AmbToast
+AmbMsg.AmbToast.show(message, type, duration);
+AmbMsg.AmbToast.success('عملیات موفق!', 3000);
+AmbMsg.AmbToast.error('خطا رخ داد!', 4000);
+AmbMsg.AmbToast.warning('هشدار!', 2000);
+AmbMsg.AmbToast.info('اطلاعیه', 5000);
+
+// میانبرهای سراسری (در همه جا در دسترس)
+ToastSuccess('ذخیره شد!');
+ToastError('خطا!');
+ToastWarning('هشدار!');
+ToastInfo('اطلاع‌رسانی');
+FireToast('success', 'پیام', 3000);
+```
+
+### پارامترهای Toast
+
+| پارامتر | نوع | پیش‌فرض | توضیح |
+|---------|-----|---------|--------|
+| `message` | string | الزامی | متن پیام |
+| `type` | string | `'info'` | `success`, `error`, `warning`, `info` |
+| `duration` | number | `5000` | زمان نمایش (ms)، صفر = دائمی |
+
+---
+
+## Alert — پیام‌های هشدار
+
+Alert ها مودال‌های اطلاع‌رسانی هستند که نیاز به تأیید کاربر دارند.
+
+### روش‌های Alert
+
+```javascript
+// Alert عمومی
+AmbMsg.alert({
+    type: 'success',          // 'success', 'error', 'warning', 'info'
+    title: 'موفقیت',
+    message: 'اطلاعات ذخیره شد!',
+    btnText: 'باشه',
     size: 'md',
-    backdrop: 'static',
-    onload: function(modal) {
-        console.log('در حال باز شدن...');
+    theme: 'dark',
+    rtl: true,
+    autoClose: 2000
+});
+
+// میانبرها
+AmbMsg.success('موفقیت!', 'عملیات انجام شد');
+AmbMsg.error('خطا!', 'مشکلی پیش آمده');
+AmbMsg.warning('هشدار!', 'لطفاً توجه کنید');
+AmbMsg.info('اطلاع', 'نسخه جدید موجود است');
+
+// میانبرهای سراسری
+AlertSuccess('موفقیت', 'ذخیره شد');
+AlertError('خطا', 'مشکل سرور', { rtl: true });
+AlertWarning('هشدار', 'جلسه به پایان می‌رسد');
+AlertInfo('اطلاع', 'ویژگی جدید');
+
+// با پارامتر options
+FireAlert('error', 'عنوان', 'پیام', { rtl: true, theme: 'dark' });
+```
+
+### Alert با لیست پیام‌ها
+
+```javascript
+// چند پیام خطا (آرایه)
+AmbMsg.error(
+    'خطاهای اعتبارسنجی',
+    [
+        'نام کاربری الزامی است',
+        'ایمیل نامعتبر است',
+        'رمز عبور حداقل ۸ کاراکتر باشد'
+    ],
+    {
+        rtl: true,
+        btnText: 'باشه',
+        theme: 'dark'
+    }
+);
+
+// با میانبر سراسری
+AlertError('خطاهای فرم', [
+    'فیلد نام الزامی است',
+    'شماره تلفن نادرست است'
+], { rtl: true, btnText: 'تصحیح' });
+```
+
+---
+
+## Confirm — تأیید عملیات
+
+```javascript
+AmbMsg.confirm({
+    title: 'حذف آیتم',
+    message: 'آیا مطمئنید که می‌خواهید این آیتم را حذف کنید؟',
+    confirmText: 'بله، حذف کن',
+    cancelText: 'انصراف',
+    size: 'sm',
+    theme: '',
+    rtl: true,
+    onConfirm: () => {
+        console.log('تأیید شد');
+        ToastSuccess('آیتم حذف شد');
     },
-    afterload: function(modal) {
-        console.log('باز شد!');
+    onCancel: () => {
+        console.log('لغو شد');
     }
 });
 ```
 
-#### `AmbModal.create(id, options)`
-فقط ایجاد (بدون نمایش)
+---
 
-```javascript
-const modal = AmbModal.create('my-modal', {
-    title: 'مودال مخفی',
-    body: '<p>این مودال نمایش داده نمی‌شود تا زمانی که show() صدا زده شود.</p>'
-});
+## Container خودکار
 
-// بعداً نمایش بده
-modal.show();
+AmbMsg به‌صورت خودکار DOM را اسکن می‌کند و container های خاص را به Toast و Alert تبدیل می‌کند. این قابلیت برای پیام‌های سمت سرور ایده‌آل است.
+
+### Toast Container
+
+```html
+<div class="amb-toast-container" data-amb-toast-step="300">
+    <div class="amb-toast-item"
+         data-amb-toast-type="success"
+         data-amb-toast-msg="✅ ذخیره شد"
+         data-amb-toast-duration="3000">
+    </div>
+    <div class="amb-toast-item"
+         data-amb-toast-type="error"
+         data-amb-toast-msg="❌ خطا در اتصال">
+    </div>
+</div>
 ```
 
-#### `AmbModal.close(id)`
-بستن مودال با شناسه
+| Attribute | توضیح |
+|-----------|--------|
+| `data-amb-toast-type` | نوع toast: `success`, `error`, `warning`, `info` |
+| `data-amb-toast-msg` | متن پیام |
+| `data-amb-toast-duration` | مدت نمایش (اختیاری، پیش‌فرض: ۵۰۰۰) |
+| `data-amb-toast-step` | تأخیر بین هر toast (پیش‌فرض: ۲۰۰) |
 
-```javascript
-AmbModal.close('my-modal');
+### Alert Container
+
+```html
+<div class="amb-alert-container" data-amb-alert-step="500">
+    <div class="amb-alert-item"
+         data-amb-alert-type="error"
+         data-amb-alert-title="خطای اعتبارسنجی"
+         data-amb-alert-msg="نام کاربری الزامی است"
+         data-amb-alert-rtl="true"
+         data-amb-alert-theme="dark"
+         data-amb-alert-btn="باشه">
+    </div>
+    <div class="amb-alert-item"
+         data-amb-alert-type="success"
+         data-amb-alert-title="موفقیت"
+         data-amb-alert-msg="اطلاعات ذخیره شد"
+         data-amb-alert-rtl="true"
+         data-amb-alert-auto-close="2000">
+    </div>
+</div>
 ```
 
-#### `AmbModal.destroy(id)`
-حذف کامل مودال از DOM و registry
-
-```javascript
-AmbModal.destroy('my-modal');
-```
-
-### Modal Instance Methods
-
-```javascript
-const modal = AmbModal.open('my-modal');
-
-modal.show();           // نمایش
-modal.hide();           // مخفی کردن
-modal.toggle();         // تغییر وضعیت
-modal.dispose();        // حذف کامل
-modal.setLoading(true); // نمایش/مخفی کردن loading overlay
-
-// به‌روزرسانی تنظیمات (نیاز به rebuild دارد)
-modal.config({
-    title: 'عنوان جدید',
-    theme: 'dark'
-});
-
-// پراپرتی‌ها
-modal.isVisible;  // boolean
-modal.element;    // wrapper element
-modal.id;         // شناسه
-```
-
-### Bootstrap Compatible API
-
-```javascript
-// دریافت نمونه موجود
-const instance = AmbModal.Modal.getInstance('myModal');
-// یا با element
-const instance = AmbModal.Modal.getInstance(document.getElementById('myModal'));
-
-// دریافت یا ایجاد نمونه
-const instance = AmbModal.Modal.getOrCreateInstance(element, options);
-```
+| Attribute | توضیح |
+|-----------|--------|
+| `data-amb-alert-type` | نوع alert |
+| `data-amb-alert-title` | عنوان |
+| `data-amb-alert-msg` | پیام |
+| `data-amb-alert-btn` | متن دکمه (پیش‌فرض: OK) |
+| `data-amb-alert-rtl` | راست به چپ |
+| `data-amb-alert-theme` | تم (`dark`) |
+| `data-amb-alert-size` | سایز |
+| `data-amb-alert-anim` | انیمیشن |
+| `data-amb-alert-auto-close` | بسته شدن خودکار (ms) |
 
 ---
 
 ## انیمیشن‌ها
 
-### ۱۲ نوع انیمیشن باز شدن
-
-| نام | توضیح | کلاس CSS |
-|-----|------|----------|
-| `fade` | محو شدن ساده | `amb-anim-fade` |
-| `zoom-in` | بزرگ شدن از 0.7 | `amb-anim-zoom-in` |
-| `zoom-out` | کوچک شدن از 1.3 | `amb-anim-zoom-out` |
-| `slide-up` | آمدن از پایین | `amb-anim-slide-up` |
-| `slide-down` | آمدن از بالا | `amb-anim-slide-down` |
-| `slide-left` | آمدن از راست | `amb-anim-slide-left` |
-| `slide-right` | آمدن از چپ | `amb-anim-slide-right` |
-| `flip-x` | چرخش سه‌بعدی حول X | `amb-anim-flip-x` |
-| `flip-y` | چرخش سه‌بعدی حول Y | `amb-anim-flip-y` |
-| `bounce` | الاستیک/فنری | `amb-anim-bounce` |
-| `rotate` | چرخش + بزرگ شدن | `amb-anim-rotate` |
-| `none` | بدون انیمیشن | - |
-
-### انیمیشن بسته شدن
-
-از همان نام‌های بالا استفاده کنید. به‌صورت خودکار معکوس اجرا می‌شوند:
+| نام انیمیشن | توضیح |
+|-------------|--------|
+| `fade` | محو ساده |
+| `zoom-in` | بزرگ شدن از ۰.۷ (پیش‌فرض باز) |
+| `zoom-out` | کوچک شدن از ۱.۳ (پیش‌فرض بسته) |
+| `slide-up` | از پایین به بالا |
+| `slide-down` | از بالا به پایین |
+| `slide-left` | از راست به چپ |
+| `slide-right` | از چپ به راست |
+| `flip-x` | چرخش سه‌بعدی محور X |
+| `flip-y` | چرخش سه‌بعدی محور Y |
+| `bounce` | جهش ارتجاعی |
+| `rotate` | چرخش + مقیاس |
+| `none` | بدون انیمیشن |
 
 ```javascript
-AmbModal.open('modal', {
-    animOpen: 'slide-left',
-    animClose: 'slide-right'  // ← معکوس slide-left
-});
-```
-
-یا از مقادیر `close-*` استفاده نکنید (خودکار تشخیص داده می‌شود).
-
-### نمونه ترکیب‌های پیشنهادی
-
-```javascript
-// ورود از پایین، خروج به پایین
-{ animOpen: 'slide-up', animClose: 'slide-down' }
-
-// ورود از راست، خروج به راست
-{ animOpen: 'slide-left', animClose: 'slide-right' }
-
-// زوم این + فید اوت
-{ animOpen: 'zoom-in', animClose: 'fade' }
-
-// Flip سه‌بعدی
-{ animOpen: 'flip-x', animClose: 'flip-y' }
+// ترکیب‌های پیشنهادی
+AmbMsg.open('modal', { animOpen: 'slide-up',  animClose: 'slide-down' });
+AmbMsg.open('modal', { animOpen: 'bounce',    animClose: 'fade' });
+AmbMsg.open('modal', { animOpen: 'flip-x',    animClose: 'flip-y' });
+AmbMsg.open('modal', { animOpen: 'zoom-in',   animClose: 'fade' });
 ```
 
 ---
 
 ## موقعیت‌ها (Positions)
 
-۹ موقعیت مختلف:
-
 ```
-top-left    top-center    top-right
-center-left   center    center-right
-bottom-left bottom-center bottom-right
+┌─────────────┬─────────────┬─────────────┐
+│  top-left   │ top-center  │  top-right  │
+├─────────────┼─────────────┼─────────────┤
+│ center-left │   center    │ center-right│
+├─────────────┼─────────────┼─────────────┤
+│bottom-left  │bottom-center│ bottom-right│
+└─────────────┴─────────────┴─────────────┘
 ```
 
 ```javascript
-// مثال‌ها
-{ position: 'top-right' }     // بالا-راست
-{ position: 'bottom-center' } // پایین-وسط
-{ position: 'center-left' }   // وسط-چپ
+AmbMsg.open('modal', { position: 'center' });       // پیش‌فرض
+AmbMsg.open('modal', { position: 'top-right' });    // مناسب اعلان
+AmbMsg.open('modal', { position: 'bottom-center' }); // مناسب موبایل
 ```
 
 ---
 
 ## سایزها (Sizes)
 
-| نام | حداکثر عرض | کاربرد |
-|-----|-----------|--------|
-| `sm` | 300px | مودال‌های کوچک (تاییدیه، هشدار) |
-| `md` | 500px | پیش‌فرض، مناسب اکثر موارد |
+| سایز | حداکثر عرض | کاربرد |
+|------|------------|--------|
+| `sm` | 300px | تأییدیه، هشدارهای کوتاه |
+| `md` | 500px | پیش‌فرض، اکثر موارد |
 | `lg` | 800px | فرم‌های بزرگ |
-| `xl` | 1140px | محتوای حجیم |
+| `xl` | 1140px | محتوای سنگین |
 | `xxl` | 1400px | جداول بزرگ |
-| `full` | 100% | تمام‌صفحه |
-| `custom` | سفارشی | با `width` تنظیم می‌شود |
+| `full` | ۱۰۰٪ | تمام‌صفحه |
+| `custom` | دلخواه | با `width` |
 
 ```javascript
-// سایز پیش‌فرض
-{ size: 'md' }
+// ریسپانسیو: full در موبایل، lg در دسکتاپ
+AmbMsg.open('modal', {
+    size: 'lg',
+    mobileSize: 'full',
+    mobileBreakpoint: 768
+});
 
-// فول اسکرین
-{ size: 'full' }
-
-// سفارشی
-{ size: 'custom', width: '650px' }
+// سایز سفارشی
+AmbMsg.open('modal', { size: 'custom', width: '650px' });
 ```
 
 ---
 
 ## تم‌ها (Themes)
 
-### تم روشن (پیش‌فرض)
 ```javascript
-{ theme: '' }  // یا مشخص نکنید
+// تم روشن (پیش‌فرض)
+AmbMsg.open('modal', { theme: '' });
+
+// تم تاریک
+AmbMsg.open('modal', { theme: 'dark' });
 ```
 
-### تم تاریک
-```javascript
-{ theme: 'dark' }
-```
-
-### تنظیم تم از طریق Attribute
 ```html
+<!-- از طریق attribute -->
 <div data-amb-theme="dark">...</div>
 ```
 
-### اضافه کردن کلاس dark به wrapper
+---
+
+## پشتیبانی RTL فارسی/عربی
+
 ```javascript
-modal.element.classList.add('amb-dark');
+// مودال فارسی با تم تاریک
+AmbMsg.open('modal', {
+    title: 'عنوان مودال',
+    body: '<p>محتوای فارسی راست‌چین</p>',
+    rtl: true,
+    theme: 'dark'
+});
+
+// هشدار فارسی
+AlertError('خطا', 'مشکلی پیش آمده است', {
+    rtl: true,
+    btnText: 'باشه'
+});
+
+// تأییدیه فارسی
+AmbMsg.confirm({
+    title: 'حذف',
+    message: 'آیا مطمئنید؟',
+    confirmText: 'بله',
+    cancelText: 'خیر',
+    rtl: true
+});
 ```
 
-### متغیرهای CSS تم تاریک
-```css
-.amb-dark, [data-amb-theme="dark"] {
-    --amb-bg: #1e1e2e;
-    --amb-color: #cdd6f4;
-    --amb-border: #313244;
-    --amb-header-bg: #181825;
-    --amb-footer-bg: #181825;
-    --amb-close-color: #6c7086;
-    --amb-close-hover: #cdd6f4;
-    --amb-scrollbar: #45475a;
-    --amb-backdrop: rgba(0,0,0,.7);
-    --amb-shadow: 0 8px 32px rgba(0,0,0,.4);
-}
+```html
+<!-- از طریق attribute -->
+<div id="persianModal" style="display:none;"
+     data-amb-title="مودال فارسی"
+     data-amb-rtl="true"
+     data-amb-theme="dark"
+     data-amb-footer='<button class="amb-btn amb-btn-primary" data-amb-dismiss="modal">باشه</button>'>
+    <p>متن فارسی راست‌چین</p>
+</div>
 ```
 
 ---
 
-## Backdrop & Keyboard
-
-### تنظیمات Backdrop
+## Loading State
 
 ```javascript
-// حالت پیش‌فرض: کلیک بیرون = بسته شدن
-{ backdrop: true }
-
-// کلیک بیرون = بی‌اثر
-{ backdrop: 'static' }
-
-// بدون پس‌زمینه
-{ backdrop: false }
-
-// رنگ سفارشی پس‌زمینه
-{ backdropColor: 'rgba(255, 0, 0, 0.3)' }
-```
-
-### Keyboard (کلید Escape)
-
-```javascript
-// فعال (پیش‌فرض)
-{ keyboard: true }
-
-// غیرفعال
-{ keyboard: false }
-```
-
-### نمونه Static Backdrop با Escape غیرفعال
-```javascript
-AmbModal.open('important-modal', {
-    title: '⚠️ هشدار مهم',
-    body: '<p>این پیام باید تایید شود.</p>',
+const modal = AmbMsg.open('loading-modal', {
+    title: 'در حال پردازش...',
+    body: '<p>لطفاً صبر کنید</p>',
     backdrop: 'static',
     keyboard: false
 });
+
+// نمایش spinner
+modal.setLoading(true);
+
+// بعد از اتمام عملیات
+fetch('/api/save', { method: 'POST' })
+    .then(res => res.json())
+    .then(() => {
+        modal.setLoading(false);
+        modal._body.innerHTML = '<p>✅ ذخیره شد!</p>';
+        setTimeout(() => modal.hide(), 1500);
+    })
+    .catch(() => {
+        modal.setLoading(false);
+        AmbMsg.error('خطا', 'مشکل در ذخیره‌سازی');
+        modal.hide();
+    });
 ```
 
 ---
 
-## رویدادها (Events)
+## رویدادها و Callbackها
 
-### رویدادهای استاندارد
+### رویدادهای DOM
 
 ```javascript
-const modal = AmbModal.open('my-modal');
+const modal = AmbMsg.open('evt-modal', { title: 'تست رویداد' });
 const wrapper = modal.element;
 
-// قبل از نمایش (قابل cancel)
-wrapper.addEventListener('show.amb.modal', function(e) {
+// قبل از نمایش (قابل لغو)
+wrapper.addEventListener('show.amb.modal', (e) => {
     console.log('در حال باز شدن...');
-    // e.preventDefault() = جلوگیری از نمایش
+    // e.preventDefault()  →  لغو باز شدن
 });
 
-// بعد از اتمام انیمیشن باز شدن
-wrapper.addEventListener('shown.amb.modal', function(e) {
-    console.log('کاملا باز شد');
+// بعد از نمایش کامل
+wrapper.addEventListener('shown.amb.modal', () => {
+    console.log('کاملاً باز شد');
 });
 
-// قبل از بسته شدن (قابل cancel)
-wrapper.addEventListener('hide.amb.modal', function(e) {
-    console.log('در حال بسته شدن...');
-    // e.preventDefault() = جلوگیری از بسته شدن
+// قبل از بستن (قابل لغو)
+wrapper.addEventListener('hide.amb.modal', (e) => {
+    if (!confirm('بسته شود؟')) e.preventDefault();
 });
 
-// بعد از اتمام انیمیشن بسته شدن
-wrapper.addEventListener('hidden.amb.modal', function(e) {
-    console.log('کاملا بسته شد');
+// بعد از بسته شدن کامل
+wrapper.addEventListener('hidden.amb.modal', () => {
+    console.log('بسته شد');
 });
 
 // کلیک روی backdrop
-wrapper.addEventListener('backdropclick.amb.modal', function(e) {
+wrapper.addEventListener('backdropclick.amb.modal', () => {
     console.log('backdrop کلیک شد');
 });
 ```
 
-### نمونه عملی: تایید قبل از بسته شدن
+### Callbackها در options
 
 ```javascript
-const modal = AmbModal.open('form-modal', {
-    title: 'فرم ثبت نام',
-    body: '<input type="text" id="name" value="">',
-    onclose: function(m) {
-        const name = document.getElementById('name').value;
-        if (name && !confirm('اطلاعات ذخیره نشده. خارج شوید؟')) {
-            return false; // جلوگیری از بسته شدن
-        }
-    }
+AmbMsg.open('modal', {
+    title: 'با callback',
+    body: '<p>محتوا</p>',
+    onload:          (m) => console.log('شروع باز شدن'),
+    afterload:       (m) => console.log('کاملاً باز شد'),
+    onclose:         (m) => { /* return false برای لغو */ },
+    afterclose:      (m) => console.log('بسته شد'),
+    onbackdropclick: (m) => console.log('backdrop')
 });
-```
-
----
-
-## متدهای کمکی
-
-### Confirm Dialog
-
-```javascript
-AmbModal.confirm({
-    title: 'حذف آیتم',
-    message: 'آیا از حذف این آیتم اطمینان دارید؟',
-    confirmText: 'بله، حذف کن',  // پیش‌فرض: 'Confirm'
-    cancelText: 'لغو',          // پیش‌فرض: 'Cancel'
-    size: 'sm',
-    theme: 'dark',
-    rtl: true,
-    onConfirm: function() {
-        // عملیات تایید
-        AmbModal.alert({ message: 'حذف شد!', type: 'success' });
-    },
-    onCancel: function() {
-        console.log('لغو شد');
-    }
-});
-```
-
-### Alert Dialog
-
-```javascript
-// موفقیت
-AmbModal.alert({
-    message: 'عملیات با موفقیت انجام شد!',
-    type: 'success',
-    title: 'موفق',
-    btnText: 'باشه',
-    autoClose: 2000  // بسته شدن خودکار بعد از 2 ثانیه
-});
-
-// خطا
-AmbModal.alert({
-    message: 'مشکلی پیش آمده است!',
-    type: 'error',
-    theme: 'dark'
-});
-
-// هشدار
-AmbModal.alert({
-    message: 'جلسه شما به زودی منقضی می‌شود.',
-    type: 'warning',
-    autoClose: 3000
-});
-
-// اطلاعات
-AmbModal.alert({
-    message: 'نسخه جدید در دسترس است.',
-    type: 'info'
-});
-```
-
-### Loading State
-
-```javascript
-const modal = AmbModal.open('data-modal', {
-    title: 'در حال بارگذاری',
-    body: '<p>لطفا منتظر بمانید...</p>',
-    backdrop: 'static',
-    keyboard: false
-});
-
-// نمایش loading
-modal.setLoading(true);
-
-// بعد از اتمام کار
-setTimeout(() => {
-    modal.setLoading(false);
-    modal._body.innerHTML = '<p>✅ داده‌ها با موفقیت بارگذاری شدند.</p>';
-}, 3000);
-```
-
----
-
-## Toast Timer
-
-### نمونه Toast با AmbModal
-
-```javascript
-function showToast(type, message, duration = 3000) {
-    const icons = {
-        success: '✅',
-        error: '❌',
-        warning: '⚠️',
-        info: 'ℹ️'
-    };
-    
-    // ایجاد modal کوچک به عنوان toast
-    const id = 'toast-' + Date.now();
-    const modal = AmbModal.open(id, {
-        body: `<div style="display:flex;align-items:center;gap:8px;font-size:14px;">
-                <span>${icons[type]}</span> ${message}
-              </div>`,
-        size: 'sm',
-        position: 'top-right',
-        animOpen: 'slide-right',
-        animClose: 'fade',
-        backdrop: false,
-        autoClose: duration,
-        onload: function(m) {
-            m._dialog.style.cssText = 'min-width:250px;padding:12px 16px;';
-        }
-    });
-}
-
-// استفاده
-showToast('success', 'ذخیره شد!', 2500);
-showToast('error', 'خطا در اتصال!', 3000);
 ```
 
 ---
@@ -645,90 +649,54 @@ showToast('error', 'خطا در اتصال!', 3000);
 
 ```css
 :root {
-    /* می‌توانید این مقادیر را بازنویسی کنید */
-    --amb-z: 1050;
-    --amb-duration: 300ms;
-    --amb-easing: ease-in-out;
-    --amb-radius: 0.5rem;
-    --amb-shadow: 0 8px 32px rgba(0,0,0,.18);
-    --amb-backdrop: rgba(0,0,0,.5);
-    
-    /* تم روشن */
+    --amb-radius: 0.5rem;           /* گوشه‌های گرد */
+    --amb-shadow: 0 10px 40px rgba(0,0,0,.2);  /* سایه */
+    --amb-duration: 300ms;          /* سرعت انیمیشن */
+    --amb-easing: ease-in-out;      /* نوع انیمیشن */
+
+    /* رنگ‌های تم روشن */
     --amb-bg: #fff;
     --amb-color: #212529;
     --amb-border: #dee2e6;
     --amb-header-bg: #f8f9fa;
     --amb-footer-bg: #f8f9fa;
-    --amb-close-color: #6c757d;
-    --amb-close-hover: #212529;
-    --amb-scrollbar: #ced4da;
 }
 ```
 
-### نمونه سفارشی‌سازی
+### کلاس‌های CSS
 
 ```css
-/* گرد کردن بیشتر گوشه‌ها */
-:root {
-    --amb-radius: 1rem;
-}
-
-/* سایه بیشتر */
-:root {
-    --amb-shadow: 0 20px 60px rgba(0,0,0,.3);
-}
-
-/* انیمیشن کندتر */
-.amb-dialog {
-    --amb-duration: 500ms;
-}
-```
-
-### کلاس‌های CSS مفید
-
-```css
-.amb-backdrop      /* پس‌زمینه */
-.amb-wrapper       /* wrapper اصلی */
-.amb-dialog        /* خود مودال */
+.amb-backdrop      /* پس‌زمینه overlay */
+.amb-wrapper       /* پوشش کلی */
+.amb-dialog        /* دیالوگ مودال */
 .amb-header        /* هدر */
 .amb-body          /* بدنه */
 .amb-footer        /* فوتر */
 .amb-title         /* عنوان */
 .amb-close         /* دکمه بستن */
 .amb-draggable     /* مودال قابل جابجایی */
-.amb-loading       /* overlay بارگذاری */
-.amb-spinner       /* اسپینر */
+.amb-loading       /* overlay loading */
+.amb-spinner       /* spinner */
+.amb-dark          /* تم تاریک */
+.amb-rtl           /* راست به چپ */
 ```
 
 ---
 
 ## سازگاری با Bootstrap
 
-AmbModal با Bootstrap 5.3 API سازگار است:
+AmbMsg همان API Bootstrap 5.3 را پشتیبانی می‌کند:
 
 ```javascript
-// معادل Bootstrap:
-// const modal = bootstrap.Modal.getInstance(element);
-const modal = AmbModal.Modal.getInstance(element);
+// Bootstrap
+const modal = bootstrap.Modal.getInstance(element);
+// AmbMsg
+const modal = AmbMsg.Modal.getInstance('modal-id');
 
-// معادل Bootstrap:
-// const modal = bootstrap.Modal.getOrCreateInstance(element);
-const modal = AmbModal.Modal.getOrCreateInstance(element, options);
-
-// معادل Bootstrap:
-// modal.show();
+// هر دو این متدها یکسان هستند
 modal.show();
-
-// معادل Bootstrap:
-// modal.hide();
 modal.hide();
-
-// معادل Bootstrap:
-// modal.toggle();
 modal.toggle();
-
-// معادل Bootstrap:
-// modal.dispose();
 modal.dispose();
 ```
 
@@ -736,208 +704,157 @@ modal.dispose();
 
 ## نمونه‌های کامل
 
-### ۱. فرم ثبت‌نام با اعتبارسنجی
-
-```html
-<button onclick="openRegisterForm()">ثبت نام</button>
-
-<script>
-function openRegisterForm() {
-    AmbModal.open('register-form', {
-        title: 'فرم ثبت نام',
-        body: `
-            <form id="registerForm">
-                <label>نام: <input type="text" id="regName" required></label><br><br>
-                <label>ایمیل: <input type="email" id="regEmail" required></label>
-            </form>
-        `,
-        footer: `
-            <button class="amb-btn amb-btn-outline" data-amb-dismiss="modal">لغو</button>
-            <button class="amb-btn amb-btn-primary" id="submitReg">ثبت نام</button>
-        `,
-        size: 'md',
-        backdrop: 'static',
-        onload: function(m) {
-            setTimeout(() => {
-                document.getElementById('submitReg').onclick = function() {
-                    const name = document.getElementById('regName').value;
-                    if (!name) {
-                        AmbModal.alert({ message: 'نام الزامی است!', type: 'error' });
-                        return;
-                    }
-                    AmbModal.alert({ 
-                        message: `${name} عزیز، ثبت نام با موفقیت انجام شد!`, 
-                        type: 'success' 
-                    });
-                    m.hide();
-                };
-            }, 100);
-        }
-    });
-}
-</script>
-```
-
-### ۲. گالری تصاویر با Drag
-
-```html
-<button onclick="openGallery()">گالری تصاویر</button>
-
-<script>
-function openGallery() {
-    AmbModal.open('gallery', {
-        title: '🖼️ گالری تصاویر',
-        body: `
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
-                <img src="https://picsum.photos/200/150?random=1" style="width:100%;border-radius:8px;">
-                <img src="https://picsum.photos/200/150?random=2" style="width:100%;border-radius:8px;">
-                <img src="https://picsum.photos/200/150?random=3" style="width:100%;border-radius:8px;">
-                <img src="https://picsum.photos/200/150?random=4" style="width:100%;border-radius:8px;">
-            </div>
-        `,
-        size: 'lg',
-        draggable: true,
-        animOpen: 'bounce',
-        position: 'center'
-    });
-}
-</script>
-```
-
-### ۳. ویزارد چند مرحله‌ای
+### فرم ثبت‌نام فارسی
 
 ```javascript
-let currentStep = 1;
-const totalSteps = 3;
+AmbMsg.open('register-form', {
+    title: 'ثبت‌نام',
+    body: `
+        <form id="regForm">
+            <label>نام: <input type="text" id="regName" required></label><br><br>
+            <label>ایمیل: <input type="email" id="regEmail" required></label><br><br>
+            <label>رمز عبور: <input type="password" id="regPass" required></label>
+        </form>
+    `,
+    footer: `
+        <button class="amb-btn amb-btn-outline" data-amb-dismiss="modal">انصراف</button>
+        <button class="amb-btn amb-btn-primary" id="submitReg">ثبت‌نام</button>
+    `,
+    size: 'md',
+    rtl: true,
+    backdrop: 'static',
+    afterload: () => {
+        document.getElementById('submitReg').onclick = () => {
+            const name = document.getElementById('regName').value;
+            if (!name) {
+                AlertError('خطا', 'نام الزامی است', { rtl: true, btnText: 'باشه' });
+                return;
+            }
+            AmbMsg.success('موفقیت!', `${name} عزیز، ثبت‌نام شما انجام شد!`, { rtl: true });
+            AmbMsg.close('register-form');
+        };
+    }
+});
+```
 
-function openWizard() {
-    showStep(currentStep);
-}
+### ارسال داده با loading
 
-function showStep(step) {
-    const steps = {
-        1: {
-            title: 'مرحله ۱: اطلاعات شخصی',
-            body: '<label>نام: <input type="text"></label>',
-            footer: `<button class="amb-btn amb-btn-primary" id="nextStep">بعدی ←</button>`
-        },
-        2: {
-            title: 'مرحله ۲: آدرس',
-            body: '<label>آدرس: <textarea></textarea></label>',
-            footer: `
-                <button class="amb-btn amb-btn-outline" id="prevStep">← قبلی</button>
-                <button class="amb-btn amb-btn-primary" id="nextStep">بعدی ←</button>
-            `
-        },
-        3: {
-            title: 'مرحله ۳: تایید',
-            body: '<p>✅ اطلاعات شما ثبت شد!</p>',
-            footer: `<button class="amb-btn amb-btn-success" data-amb-dismiss="modal">اتمام</button>`
-        }
-    };
-    
-    const data = steps[step];
-    AmbModal.open('wizard', {
-        title: data.title,
-        body: data.body,
-        footer: data.footer,
-        size: 'md',
+```javascript
+async function submitData(data) {
+    const modal = AmbMsg.open('submit-modal', {
+        title: 'ارسال اطلاعات',
+        body: '<p>لطفاً صبر کنید...</p>',
         backdrop: 'static',
-        onload: function(m) {
-            setTimeout(() => {
-                const nextBtn = document.getElementById('nextStep');
-                const prevBtn = document.getElementById('prevStep');
-                
-                if (nextBtn) {
-                    nextBtn.onclick = () => {
-                        currentStep++;
-                        m.hide();
-                        setTimeout(() => showStep(currentStep), 300);
-                    };
-                }
-                if (prevBtn) {
-                    prevBtn.onclick = () => {
-                        currentStep--;
-                        m.hide();
-                        setTimeout(() => showStep(currentStep), 300);
-                    };
-                }
-            }, 100);
-        }
+        keyboard: false,
+        rtl: true
     });
+
+    modal.setLoading(true);
+
+    try {
+        await fetch('/api/save', { method: 'POST', body: JSON.stringify(data) });
+        modal.setLoading(false);
+        modal._body.innerHTML = '<p>✅ اطلاعات با موفقیت ذخیره شد!</p>';
+        setTimeout(() => modal.hide(), 2000);
+        ToastSuccess('ذخیره شد!');
+    } catch (err) {
+        modal.setLoading(false);
+        AmbMsg.error('خطا', 'مشکل در ارتباط با سرور', { rtl: true, btnText: 'باشه' });
+        modal.hide();
+    }
 }
+```
+
+### جریان کامل تأیید → loading → نتیجه
+
+```javascript
+AmbMsg.confirm({
+    title: 'حذف فایل',
+    message: 'آیا مطمئنید می‌خواهید این فایل را حذف کنید؟',
+    confirmText: 'بله، حذف کن',
+    cancelText: 'انصراف',
+    rtl: true,
+    onConfirm: async () => {
+        const modal = AmbMsg.open('delete-modal', {
+            title: 'در حال حذف...',
+            body: '<p>لطفاً صبر کنید</p>',
+            backdrop: 'static',
+            rtl: true
+        });
+        modal.setLoading(true);
+
+        await new Promise(resolve => setTimeout(resolve, 2000));
+
+        modal.setLoading(false);
+        modal._body.innerHTML = '<p>✅ فایل حذف شد!</p>';
+        setTimeout(() => modal.hide(), 1500);
+        setTimeout(() => ToastSuccess('فایل با موفقیت حذف شد'), 2000);
+    }
+});
+```
+
+### پیام‌های سرور با Container خودکار (PHP)
+
+```html
+<!-- خطاهای اعتبارسنجی از PHP -->
+<div class="amb-toast-container" data-amb-toast-step="300">
+    <?php foreach ($errors as $err): ?>
+        <div class="amb-toast-item"
+             data-amb-toast-type="error"
+             data-amb-toast-msg="<?= htmlspecialchars($err) ?>">
+        </div>
+    <?php endforeach; ?>
+</div>
+
+<!-- پیام موفقیت -->
+<?php if ($success): ?>
+<div class="amb-alert-container" data-amb-alert-step="300">
+    <div class="amb-alert-item"
+         data-amb-alert-type="success"
+         data-amb-alert-title="موفقیت"
+         data-amb-alert-msg="<?= htmlspecialchars($successMsg) ?>"
+         data-amb-alert-rtl="true"
+         data-amb-alert-btn="باشه">
+    </div>
+</div>
+<?php endif; ?>
 ```
 
 ---
 
-## نکات و ترفندها
+## مرجع سریع
 
-### ۱. استفاده از HTML در title و body
 ```javascript
-AmbModal.open('modal', {
-    title: '<span style="color:red;">⚠️</span> هشدار',
-    body: '<strong>متن bold</strong> و <em>ایتالیک</em>'
-});
-```
+// Toast
+ToastSuccess('پیام');
+ToastError('پیام');
+ToastWarning('پیام');
+ToastInfo('پیام');
 
-### ۲. چند مودال همزمان
-```javascript
-AmbModal.open('modal1', { title: 'اول' });
-AmbModal.open('modal2', { title: 'دوم' });
-// هر دو نمایش داده می‌شوند، z-index خودکار مدیریت می‌شود
-```
+// Alert
+AlertSuccess('عنوان', 'پیام');
+AlertError('عنوان', 'پیام');
+AlertWarning('عنوان', 'پیام');
+AlertInfo('عنوان', 'پیام');
 
-### ۳. تغییر محتوا بعد از نمایش
-```javascript
-const modal = AmbModal.open('dynamic-modal', {
-    title: 'در حال بارگذاری...',
-    body: '<p>⏳ لطفا صبر کنید</p>'
-});
+// Confirm
+AmbMsg.confirm({ title: '...', message: '...', onConfirm: () => {} });
 
-// بعدا محتوا رو عوض کن
-setTimeout(() => {
-    modal._dialog.querySelector('.amb-title').innerHTML = 'آماده!';
-    modal._body.innerHTML = '<p>✅ بارگذاری کامل شد</p>';
-}, 2000);
-```
-
-### ۴. مودال responsive
-```javascript
-AmbModal.open('responsive-modal', {
-    size: 'lg',
-    mobileSize: 'full',      // تمام صفحه در موبایل
-    mobileBreakpoint: 768    // breakpoint سفارشی
-});
+// Modal
+AmbMsg.open('id', { title: '...', body: '...' });
+AmbMsg.close('id');
+AmbMsg.destroy('id');
+AmbMsg.config({ theme: 'dark' });
 ```
 
 ---
 
-## راهنمای رفع اشکال
+## مستندات بیشتر
 
-| مشکل | راه حل |
+| فایل | توضیح |
 |------|--------|
-| مودال نمایش داده نمی‌شود | مطمئن شوید ID منحصر به فرد است و CSS/JS به درستی لود شده‌اند |
-| انیمیشن کار نمی‌کند | نام انیمیشن را چک کنید (مثال: `'zoom-in'` نه `'zoomIn'`) |
-| backdrop کلیک نمی‌شود | `backdrop: 'static'` را با `backdrop: true` جایگزین کنید |
-| Escape کار نمی‌کند | مطمئن شوید `keyboard: true` است |
-| چند مودال تداخل دارند | هر مودال باید ID یکتا داشته باشد |
-
----
-
-## مرورگرهای پشتیبانی شده
-
-- Chrome 90+
-- Firefox 88+
-- Safari 14+
-- Edge 90+
-- Opera 76+
-
----
-
-## مجوز
-
-MIT License — استفاده در پروژه‌های شخصی و تجاری آزاد است.
-
----
-
-> **نکته:** این مستندات را برای ارجاع‌های بعدی ذخیره کنید. AmbModal سبک، سریع و کاملاً قابل شخصی‌سازی است. برای سوالات بیشتر، به کد منبع یا issue tracker مراجعه کنید.
+| [docs/00-quick-reference.md](docs/00-quick-reference.md) | مرجع سریع انگلیسی |
+| [docs/01-complete-api-documentation.md](docs/01-complete-api-documentation.md) | مستندات کامل API |
+| [docs/02-javascript-usage.md](docs/02-javascript-usage.md) | استفاده با JavaScript |
+| [docs/03-html-attribute-usage.md](docs/03-html-attribute-usage.md) | استفاده با HTML Attribute |
+| [docs/04-auto-attribute-documentation.md](docs/04-auto-attribute-documentation.md) | Container خودکار |

@@ -1,5 +1,5 @@
-# 🚀 AmbMsg Quick Reference for AI Agents
-> **Lightweight Modal/Toast Library** | Zero Dependencies | Bootstrap 5.3 Compatible
+# 🚀 AmbMsg Quick Reference
+> **Lightweight Modal/Toast Library** | v1.1 | Zero Dependencies | Bootstrap 5.3 Compatible
 ---
 ## 📦 Installation
 ```html

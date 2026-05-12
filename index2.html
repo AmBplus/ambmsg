@@ -121,7 +121,7 @@
     </div>
 
     <hr>
-    <div class="subtitle">🧪 تست jLoad برای بررسی عدم داپلیکیت id/class/attribute در بدنه مودال</div>
+    <div class="subtitle">🧪 تست jLoad برای بررسی عدم تکراری شدن id/class/attribute در بدنه مودال</div>
     <div class="example-grid">
         <div class="example-card">
             <h3>jLoad Test A</h3>
@@ -360,10 +360,13 @@
 
         window.runJLoadDuplicateCheck = function(caseKey) {
             const test = jLoadTests[caseKey];
-            if (!test) return;
+            if (!test) {
+                console.warn('[AmbMsg][jLoad Duplicate Test] Invalid case key:', caseKey);
+                return;
+            }
 
             AmbMsg.destroy(test.modalId);
-            const modal = AmbMsg.open(test.modalId, {
+            AmbMsg.open(test.modalId, {
                 title: test.title,
                 body: getJLoadBodyHTML(test),
                 size: 'sm',
@@ -392,8 +395,6 @@
                     });
                 }
             });
-
-            return modal;
         };
 
         // ثبت یک دکمه نمونه در صورت نیاز - نمونه dynamic بدون نوشتن بدنه جدید در JS

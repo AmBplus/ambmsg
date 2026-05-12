@@ -121,7 +121,7 @@
     </div>
 
     <hr>
-    <div class="subtitle">🧪 تست jLoad برای بررسی عدم تکراری شدن id/class/attribute در بدنه مودال</div>
+    <div class="subtitle">🧪 تست jLoad برای بررسی تکرار نشدن id/class/attribute در بدنه مودال</div>
     <div class="example-grid">
         <div class="example-card">
             <h3>jLoad Test A</h3>
@@ -361,7 +361,7 @@
         window.runJLoadDuplicateCheck = function(caseKey) {
             const test = jLoadTests[caseKey];
             if (!test) {
-                console.warn('[AmbMsg][jLoad Duplicate Test] Invalid case key:', caseKey);
+                console.warn('[AmbMsg][jLoad Duplicate Test] Invalid case key:', caseKey, '| Expected: caseA, caseB, caseC');
                 return;
             }
 
@@ -393,6 +393,14 @@
                         classIsUnique: classCount === 1,
                         attributeIsUnique: attrCount === 1
                     });
+
+                    if (idCount !== 1 || classCount !== 1 || attrCount !== 1) {
+                        console.error(`[AmbMsg][jLoad Duplicate Test][${caseKey}] Duplicate detected`, {
+                            idCount,
+                            classCount,
+                            attrCount
+                        });
+                    }
                 }
             });
         };

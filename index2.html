@@ -119,6 +119,32 @@
             </div>
         </div>
     </div>
+
+    <hr>
+    <div class="subtitle">🧪 تست jLoad برای بررسی تکرار نشدن id/class/attribute در بدنه مودال</div>
+    <div class="example-grid">
+        <div class="example-card">
+            <h3>jLoad Test A</h3>
+            <p>باز شدن مودال با بدنه داینامیک و لاگ شمارش در کنسول</p>
+            <div class="btn-group">
+                <button class="btn-primary" onclick="runJLoadDuplicateCheck('caseA')">اجرای تست A</button>
+            </div>
+        </div>
+        <div class="example-card">
+            <h3>jLoad Test B</h3>
+            <p>بررسی id و class اختصاصی بدنه مودال</p>
+            <div class="btn-group">
+                <button class="btn-success" onclick="runJLoadDuplicateCheck('caseB')">اجرای تست B</button>
+            </div>
+        </div>
+        <div class="example-card">
+            <h3>jLoad Test C</h3>
+            <p>بررسی یکتا بودن data attribute در صفحه</p>
+            <div class="btn-group">
+                <button class="btn-info" onclick="runJLoadDuplicateCheck('caseC')">اجرای تست C</button>
+            </div>
+        </div>
+    </div>
 </div>
 
 <!-- ======================== بدنه مودال‌ها (همگی در HTML) ======================== -->
@@ -299,6 +325,86 @@
 
     // همچنین می‌توانیم مودال interactive رو از طریق دکمه فراخوانی کنیم (اختیاری)
     document.addEventListener('DOMContentLoaded', function() {
+        const jLoadTests = {
+            caseA: {
+                modalId: 'jload-modal-case-a',
+                bodyId: 'jload-body-case-a',
+                bodyClass: 'jload-body-case-a',
+                marker: 'jload-marker-case-a',
+                title: 'jLoad Test A'
+            },
+            caseB: {
+                modalId: 'jload-modal-case-b',
+                bodyId: 'jload-body-case-b',
+                bodyClass: 'jload-body-case-b',
+                marker: 'jload-marker-case-b',
+                title: 'jLoad Test B'
+            },
+            caseC: {
+                modalId: 'jload-modal-case-c',
+                bodyId: 'jload-body-case-c',
+                bodyClass: 'jload-body-case-c',
+                marker: 'jload-marker-case-c',
+                title: 'jLoad Test C'
+            }
+        };
+
+        function getJLoadBodyHTML(test) {
+            return `
+                <div id="${test.bodyId}" class="${test.bodyClass}" data-jload-marker="${test.marker}">
+                    <p style="margin:0;">✅ این بدنه به صورت jLoad-style ساخته شد.</p>
+                    <small style="color:#6b7280;">id=${test.bodyId} | class=${test.bodyClass}</small>
+                </div>
+            `;
+        }
+
+        window.runJLoadDuplicateCheck = function(caseKey) {
+            const test = jLoadTests[caseKey];
+            if (!test) {
+                console.warn('[AmbMsg][jLoad Duplicate Test] Invalid case key | Received:', caseKey, '| Expected one of: caseA, caseB, or caseC');
+                return;
+            }
+
+            AmbMsg.destroy(test.modalId);
+            AmbMsg.open(test.modalId, {
+                title: test.title,
+                body: getJLoadBodyHTML(test),
+                size: 'sm',
+                animOpen: 'zoom-in',
+                animClose: 'zoom-out',
+                footer: '<button class="btn-outline" data-amb-dismiss="modal">بستن</button>',
+                afterload: function() {
+                    const idSelector = `#${test.bodyId}`;
+                    const classSelector = `.${test.bodyClass}`;
+                    const attrSelector = `[data-jload-marker="${test.marker}"]`;
+
+                    const idCount = document.querySelectorAll(idSelector).length;
+                    const classCount = document.querySelectorAll(classSelector).length;
+                    const attrCount = document.querySelectorAll(attrSelector).length;
+
+                    console.log(`[AmbMsg][jLoad Duplicate Test][${caseKey}]`, {
+                        idSelector,
+                        classSelector,
+                        attrSelector,
+                        idCount,
+                        classCount,
+                        attrCount,
+                        idIsUnique: idCount === 1,
+                        classIsUnique: classCount === 1,
+                        attributeIsUnique: attrCount === 1
+                    });
+
+                    if (idCount !== 1 || classCount !== 1 || attrCount !== 1) {
+                        console.error(`[AmbMsg][jLoad Duplicate Test][${caseKey}] Uniqueness constraint violated`, {
+                            idCount,
+                            classCount,
+                            attrCount
+                        });
+                    }
+                }
+            });
+        };
+
         // ثبت یک دکمه نمونه در صورت نیاز - نمونه dynamic بدون نوشتن بدنه جدید در JS
         // ایجاد یک دکمه شناور برای تست بیشتر (اختیاری)
         let extraBtn = document.createElement('button');

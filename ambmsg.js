@@ -60,11 +60,11 @@
         }
     };
 
-    const applyVars = (wrapper, cfg) => {
+    const applyVars = (wrapper, cfg, backdrop) => {
         if (cfg.duration) wrapper.style.setProperty('--amb-duration', cfg.duration + 'ms');
         if (cfg.easing) wrapper.style.setProperty('--amb-easing', cfg.easing);
         if (cfg.backdropColor) {
-            const bd = $('.amb-backdrop', wrapper.parentNode) || wrapper.previousElementSibling;
+            const bd = backdrop || $('.amb-backdrop', wrapper.parentNode) || wrapper.previousElementSibling;
             if (bd) bd.style.background = cfg.backdropColor;
         }
     };
@@ -135,7 +135,7 @@
     };
 
     /* ── Build DOM ────────────────────────────────── */
-    const buildDOM = (id, cfg) => {
+    const buildDOM = (id, cfg, wrapper) => {
         const pos = cfg.position.replace(/\s+/g, '-');
         const sizeClass = cfg.size === 'custom' ? '' : 'amb-' + cfg.size;
         const themeClass = cfg.theme === 'dark' ? 'amb-dark' : '';
@@ -147,13 +147,11 @@
             return bd;
         })() : null;
 
-        const wrapper = document.createElement('div');
         wrapper.className = ['amb-wrapper', 'amb-pos-' + pos, themeClass, rtlClass].filter(Boolean).join(' ');
         wrapper.setAttribute('role', 'dialog');
         wrapper.setAttribute('aria-modal', 'true');
         wrapper.setAttribute('aria-labelledby', id + '-title');
         wrapper.setAttribute('aria-describedby', id + '-body');
-        wrapper.id = id + '-wrapper';
         wrapper.tabIndex = -1;
 
         const dialog = document.createElement('div');
@@ -199,6 +197,7 @@
             dialog.append(footer);
         }
 
+        wrapper.innerHTML = '';
         wrapper.append(dialog);
         return { backdrop, wrapper, dialog, body };
     };
@@ -251,6 +250,13 @@
                 if (!target.id) target.id = this._id;
             }
 
+            if (!this._el) {
+                this._el = document.createElement('div');
+                this._el.id = this._id;
+                this._el.style.display = 'none';
+                document.body.append(this._el);
+            }
+
             const src = this._el;
             const fromAttr = src ? {
                 title: attr(src, 'data-amb-title') || '',
@@ -279,7 +285,16 @@
             Object.keys(fromAttr).forEach(k => fromAttr[k] === undefined && delete fromAttr[k]);
 
             this.cfg = merge(DEFAULTS, fromAttr, options);
-            this._sourceHTML = src ? src.innerHTML : null;
+            this._sourceHTML = src.innerHTML;
+            this._sourceClassName = src.className;
+            this._sourceStyle = src.getAttribute('style');
+            this._sourceA11yAttrs = {
+                role: src.getAttribute('role'),
+                ariaModal: src.getAttribute('aria-modal'),
+                ariaLabelledby: src.getAttribute('aria-labelledby'),
+                ariaDescribedby: src.getAttribute('aria-describedby'),
+                tabIndex: src.getAttribute('tabindex'),
+            };
             this._visible = false;
             this._autoCloseTimer = null;
             this._trapHandler = null;
@@ -289,13 +304,11 @@
             this._resizeHandler = () => this._applyMobileSize();
 
             this._build();
-            // جلوگیری از ID تکراری بین سورس مخفی و بدنه رندرشده مودال
-            if (this._el) this._el.innerHTML = '';
             _registry.set(this._id, this);
         }
 
         _build() {
-            const { backdrop, wrapper, dialog, body } = buildDOM(this._id, this.cfg);
+            const { backdrop, wrapper, dialog, body } = buildDOM(this._id, this.cfg, this._el);
             this._backdrop = backdrop;
             this._wrapper = wrapper;
             this._dialog = dialog;
@@ -309,7 +322,6 @@
             }
             wrapper.style.zIndex = z + 1;
             wrapper.style.display = 'none';
-            document.body.append(wrapper);
 
             if (this.cfg.draggable) makeDraggable(dialog);
 
@@ -366,7 +378,7 @@
             requestAnimationFrame(() => w.classList.add('amb-show'));
 
             if (cfg.animOpen && cfg.animOpen !== 'none') {
-                applyVars(w, cfg);
+                applyVars(w, cfg, bd);
                 d.classList.add('amb-anim-' + cfg.animOpen);
                 afterAnim(d, () => {
                     d.classList.remove('amb-anim-' + cfg.animOpen);
@@ -438,7 +450,7 @@
             };
 
             if (cfg.animClose && cfg.animClose !== 'none') {
-                applyVars(w, cfg);
+                applyVars(w, cfg, bd);
                 d.classList.add('amb-anim-close-' + cfg.animClose);
                 if (bd) bd.classList.remove('amb-show');
                 afterAnim(d, () => { d.classList.remove('amb-anim-close-' + cfg.animClose); done(); });
@@ -454,9 +466,23 @@
 
         dispose() {
             const removeDOM = () => {
-                if (this._wrapper) this._wrapper.remove();
                 if (this._backdrop) this._backdrop.remove();
-                if (this._el && this._sourceHTML !== null) this._el.innerHTML = this._sourceHTML;
+                if (this._el) {
+                    this._el.className = this._sourceClassName;
+                    if (this._sourceStyle === null) this._el.removeAttribute('style');
+                    else this._el.setAttribute('style', this._sourceStyle);
+                    const a11y = this._sourceA11yAttrs;
+                    const restoreAttr = (name, value) => {
+                        if (value == null) this._el.removeAttribute(name);
+                        else this._el.setAttribute(name, value);
+                    };
+                    restoreAttr('role', a11y.role);
+                    restoreAttr('aria-modal', a11y.ariaModal);
+                    restoreAttr('aria-labelledby', a11y.ariaLabelledby);
+                    restoreAttr('aria-describedby', a11y.ariaDescribedby);
+                    restoreAttr('tabindex', a11y.tabIndex);
+                    this._el.innerHTML = this._sourceHTML;
+                }
                 _registry.delete(this._id);
                 window.removeEventListener('resize', this._resizeHandler);
             };

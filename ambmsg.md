@@ -129,6 +129,8 @@ const existing = AmbMsg.Modal.getInstance('myModal');
 | `keyboard` | boolean | `true` | بسته شدن با کلید Escape |
 | `autoFocus` | boolean | `true` | فوکوس خودکار روی اولین المنت |
 | `autoClose` | number | `0` | بسته شدن خودکار بعد از X میلی‌ثانیه (0 = غیرفعال) |
+| `showHeader` | boolean | `true` | نمایش/عدم نمایش هدر مودال |
+| `showCloseIcon` | boolean | `true` | نمایش/عدم نمایش آیکون بستن در هدر |
 | `draggable` | boolean | `false` | قابلیت جابجایی با موس/تاچ |
 | `rtl` | boolean | `false` | راست به چپ (فارسی/عربی) |
 | `theme` | string | `''` | تم: `''` (روشن) یا `'dark'` |
@@ -168,6 +170,8 @@ const existing = AmbMsg.Modal.getInstance('myModal');
 | `data-amb-keyboard` | `true` `false` | `true` | کلید Escape |
 | `data-amb-auto-focus` | `true` `false` | `true` | فوکوس خودکار |
 | `data-amb-auto-close` | عدد (ms) | `0` | بسته شدن خودکار |
+| `data-amb-show-header` | `true` `false` | `true` | نمایش/عدم نمایش هدر |
+| `data-amb-show-close-icon` | `true` `false` | `true` | نمایش/عدم نمایش آیکون بستن هدر |
 | `data-amb-draggable` | `true` `false` | `false` | قابل جابجایی |
 | `data-amb-rtl` | `true` `false` | `false` | راست به چپ |
 | `data-amb-theme` | `dark` `''` | `''` | تم |

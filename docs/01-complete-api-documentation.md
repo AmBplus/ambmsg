@@ -89,6 +89,8 @@ AmbMsg is a lightweight, attribute-driven modal and toast framework with extensi
 | `keyboard` | boolean | `true` | Close with Escape key |
 | `autoFocus` | boolean | `true` | Auto-focus first element |
 | `autoClose` | number | `0` | Auto-close after ms (0=off) |
+| `showHeader` | boolean | `true` | Show/hide modal header |
+| `showCloseIcon` | boolean | `true` | Show/hide close icon in header |
 | `draggable` | boolean | `false` | Drag by header |
 | `rtl` | boolean | `false` | Right-to-left layout |
 | `theme` | string | `''` | `''` (light) or `'dark'` |

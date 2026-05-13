@@ -114,6 +114,8 @@ Any `<div>` with an `id` and `data-amb-*` attributes becomes a modal:
 | `data-amb-keyboard` | `true`, `false` | `true` | Escape key behavior |
 | `data-amb-auto-focus` | `true`, `false` | `true` | Auto-focus first element |
 | `data-amb-auto-close` | number (ms) | `0` | Auto-close delay |
+| `data-amb-show-header` | `true`, `false` | `true` | Show/hide modal header |
+| `data-amb-show-close-icon` | `true`, `false` | `true` | Show/hide close icon in header |
 | `data-amb-draggable` | `true`, `false` | `false` | Draggable modal |
 | `data-amb-rtl` | `true`, `false` | `false` | Right-to-left layout |
 | `data-amb-theme` | `dark`, `''` | `''` | Color theme |
@@ -493,6 +495,8 @@ Always include a way to close the modal:
      data-amb-backdrop="true|false|static"
      data-amb-keyboard="true|false"
      data-amb-auto-close="3000"
+     data-amb-show-header="true|false"
+     data-amb-show-close-icon="true|false"
      data-amb-draggable="true"
      data-amb-theme="dark"
      data-amb-rtl="true"

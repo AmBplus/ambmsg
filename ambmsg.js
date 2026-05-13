@@ -289,8 +289,13 @@
             this._resizeHandler = () => this._applyMobileSize();
 
             this._build();
-            // جلوگیری از ID تکراری بین سورس مخفی و بدنه رندرشده مودال
-            if (this._el) this._el.innerHTML = '';
+            // انتقال ID از سورس به wrapper تا getElementById و رویدادها روی wrapper کار کنند
+            if (this._wrapper) this._wrapper.id = this._id;
+            if (this._el) {
+                this._el.removeAttribute('id');                  // جلوگیری از ID تکراری در DOM
+                this._el.setAttribute('data-amb-src-id', this._id); // نشانه‌گذاری برای جلوگیری از ساخت مجدد
+                this._el.innerHTML = '';
+            }
             _registry.set(this._id, this);
         }
 
@@ -456,7 +461,11 @@
             const removeDOM = () => {
                 if (this._wrapper) this._wrapper.remove();
                 if (this._backdrop) this._backdrop.remove();
-                if (this._el && this._sourceHTML !== null) this._el.innerHTML = this._sourceHTML;
+                if (this._el && this._sourceHTML !== null) {
+                    this._el.id = this._id;   // بازگرداندن ID به سورس برای استفاده مجدد
+                    this._el.removeAttribute('data-amb-src-id');
+                    this._el.innerHTML = this._sourceHTML;
+                }
                 _registry.delete(this._id);
                 window.removeEventListener('resize', this._resizeHandler);
             };
@@ -746,6 +755,7 @@
         });
 
         $$('[data-amb="modal"]').forEach(el => {
+            if (el.hasAttribute('data-amb-src-id')) return; // قبلاً به Modal تبدیل شده
             if (!el.id) el.id = uid();
             if (!_registry.has(el.id)) new Modal(el);
         });

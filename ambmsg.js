@@ -154,7 +154,6 @@
         wrapper.setAttribute('aria-modal', 'true');
         wrapper.setAttribute('aria-describedby', id + '-body');
         if (cfg.showHeader !== false) wrapper.setAttribute('aria-labelledby', id + '-title');
-        else wrapper.removeAttribute('aria-labelledby');
         wrapper.tabIndex = -1;
 
         const dialog = document.createElement('div');

@@ -288,6 +288,13 @@
             this._sourceHTML = src ? src.innerHTML : null;
             this._sourceClassName = src ? src.className : '';
             this._sourceStyle = src ? src.getAttribute('style') : null;
+            this._sourceA11yAttrs = src ? {
+                role: src.getAttribute('role'),
+                ariaModal: src.getAttribute('aria-modal'),
+                ariaLabelledby: src.getAttribute('aria-labelledby'),
+                ariaDescribedby: src.getAttribute('aria-describedby'),
+                tabIndex: src.getAttribute('tabindex'),
+            } : null;
             this._visible = false;
             this._autoCloseTimer = null;
             this._trapHandler = null;
@@ -464,11 +471,17 @@
                     this._el.className = this._sourceClassName;
                     if (this._sourceStyle === null) this._el.removeAttribute('style');
                     else this._el.setAttribute('style', this._sourceStyle);
-                    this._el.removeAttribute('role');
-                    this._el.removeAttribute('aria-modal');
-                    this._el.removeAttribute('aria-labelledby');
-                    this._el.removeAttribute('aria-describedby');
-                    this._el.removeAttribute('tabindex');
+                    const a11y = this._sourceA11yAttrs || {};
+                    if (a11y.role === null) this._el.removeAttribute('role');
+                    else this._el.setAttribute('role', a11y.role);
+                    if (a11y.ariaModal === null) this._el.removeAttribute('aria-modal');
+                    else this._el.setAttribute('aria-modal', a11y.ariaModal);
+                    if (a11y.ariaLabelledby === null) this._el.removeAttribute('aria-labelledby');
+                    else this._el.setAttribute('aria-labelledby', a11y.ariaLabelledby);
+                    if (a11y.ariaDescribedby === null) this._el.removeAttribute('aria-describedby');
+                    else this._el.setAttribute('aria-describedby', a11y.ariaDescribedby);
+                    if (a11y.tabIndex === null) this._el.removeAttribute('tabindex');
+                    else this._el.setAttribute('tabindex', a11y.tabIndex);
                     this._el.innerHTML = this._sourceHTML;
                 }
                 _registry.delete(this._id);

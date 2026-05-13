@@ -135,7 +135,7 @@
     };
 
     /* ── Build DOM ────────────────────────────────── */
-    const buildDOM = (id, cfg) => {
+    const buildDOM = (id, cfg, wrapper) => {
         const pos = cfg.position.replace(/\s+/g, '-');
         const sizeClass = cfg.size === 'custom' ? '' : 'amb-' + cfg.size;
         const themeClass = cfg.theme === 'dark' ? 'amb-dark' : '';
@@ -147,13 +147,11 @@
             return bd;
         })() : null;
 
-        const wrapper = document.createElement('div');
         wrapper.className = ['amb-wrapper', 'amb-pos-' + pos, themeClass, rtlClass].filter(Boolean).join(' ');
         wrapper.setAttribute('role', 'dialog');
         wrapper.setAttribute('aria-modal', 'true');
         wrapper.setAttribute('aria-labelledby', id + '-title');
         wrapper.setAttribute('aria-describedby', id + '-body');
-        wrapper.id = id + '-wrapper';
         wrapper.tabIndex = -1;
 
         const dialog = document.createElement('div');
@@ -199,6 +197,7 @@
             dialog.append(footer);
         }
 
+        wrapper.innerHTML = '';
         wrapper.append(dialog);
         return { backdrop, wrapper, dialog, body };
     };
@@ -251,6 +250,13 @@
                 if (!target.id) target.id = this._id;
             }
 
+            if (!this._el) {
+                this._el = document.createElement('div');
+                this._el.id = this._id;
+                this._el.style.display = 'none';
+                document.body.append(this._el);
+            }
+
             const src = this._el;
             const fromAttr = src ? {
                 title: attr(src, 'data-amb-title') || '',
@@ -280,6 +286,8 @@
 
             this.cfg = merge(DEFAULTS, fromAttr, options);
             this._sourceHTML = src ? src.innerHTML : null;
+            this._sourceClassName = src ? src.className : '';
+            this._sourceStyle = src ? src.getAttribute('style') : null;
             this._visible = false;
             this._autoCloseTimer = null;
             this._trapHandler = null;
@@ -289,18 +297,11 @@
             this._resizeHandler = () => this._applyMobileSize();
 
             this._build();
-            // انتقال ID از سورس به wrapper تا getElementById و رویدادها روی wrapper کار کنند
-            if (this._wrapper) this._wrapper.id = this._id;
-            if (this._el) {
-                this._el.removeAttribute('id');                  // جلوگیری از ID تکراری در DOM
-                this._el.setAttribute('data-amb-src-id', this._id); // نشانه‌گذاری برای جلوگیری از ساخت مجدد
-                this._el.innerHTML = '';
-            }
             _registry.set(this._id, this);
         }
 
         _build() {
-            const { backdrop, wrapper, dialog, body } = buildDOM(this._id, this.cfg);
+            const { backdrop, wrapper, dialog, body } = buildDOM(this._id, this.cfg, this._el);
             this._backdrop = backdrop;
             this._wrapper = wrapper;
             this._dialog = dialog;
@@ -314,7 +315,6 @@
             }
             wrapper.style.zIndex = z + 1;
             wrapper.style.display = 'none';
-            document.body.append(wrapper);
 
             if (this.cfg.draggable) makeDraggable(dialog);
 
@@ -459,11 +459,16 @@
 
         dispose() {
             const removeDOM = () => {
-                if (this._wrapper) this._wrapper.remove();
                 if (this._backdrop) this._backdrop.remove();
                 if (this._el && this._sourceHTML !== null) {
-                    this._el.id = this._id;   // بازگرداندن ID به سورس برای استفاده مجدد
-                    this._el.removeAttribute('data-amb-src-id');
+                    this._el.className = this._sourceClassName;
+                    if (this._sourceStyle === null) this._el.removeAttribute('style');
+                    else this._el.setAttribute('style', this._sourceStyle);
+                    this._el.removeAttribute('role');
+                    this._el.removeAttribute('aria-modal');
+                    this._el.removeAttribute('aria-labelledby');
+                    this._el.removeAttribute('aria-describedby');
+                    this._el.removeAttribute('tabindex');
                     this._el.innerHTML = this._sourceHTML;
                 }
                 _registry.delete(this._id);
@@ -755,7 +760,6 @@
         });
 
         $$('[data-amb="modal"]').forEach(el => {
-            if (el.hasAttribute('data-amb-src-id')) return; // قبلاً به Modal تبدیل شده
             if (!el.id) el.id = uid();
             if (!_registry.has(el.id)) new Modal(el);
         });

@@ -285,16 +285,16 @@
             Object.keys(fromAttr).forEach(k => fromAttr[k] === undefined && delete fromAttr[k]);
 
             this.cfg = merge(DEFAULTS, fromAttr, options);
-            this._sourceHTML = src ? src.innerHTML : null;
-            this._sourceClassName = src ? src.className : '';
-            this._sourceStyle = src ? src.getAttribute('style') : null;
-            this._sourceA11yAttrs = src ? {
+            this._sourceHTML = src.innerHTML;
+            this._sourceClassName = src.className;
+            this._sourceStyle = src.getAttribute('style');
+            this._sourceA11yAttrs = {
                 role: src.getAttribute('role'),
                 ariaModal: src.getAttribute('aria-modal'),
                 ariaLabelledby: src.getAttribute('aria-labelledby'),
                 ariaDescribedby: src.getAttribute('aria-describedby'),
                 tabIndex: src.getAttribute('tabindex'),
-            } : null;
+            };
             this._visible = false;
             this._autoCloseTimer = null;
             this._trapHandler = null;
@@ -467,21 +467,20 @@
         dispose() {
             const removeDOM = () => {
                 if (this._backdrop) this._backdrop.remove();
-                if (this._el && this._sourceHTML !== null) {
+                if (this._el) {
                     this._el.className = this._sourceClassName;
                     if (this._sourceStyle === null) this._el.removeAttribute('style');
                     else this._el.setAttribute('style', this._sourceStyle);
-                    const a11y = this._sourceA11yAttrs || {};
-                    if (a11y.role === null) this._el.removeAttribute('role');
-                    else this._el.setAttribute('role', a11y.role);
-                    if (a11y.ariaModal === null) this._el.removeAttribute('aria-modal');
-                    else this._el.setAttribute('aria-modal', a11y.ariaModal);
-                    if (a11y.ariaLabelledby === null) this._el.removeAttribute('aria-labelledby');
-                    else this._el.setAttribute('aria-labelledby', a11y.ariaLabelledby);
-                    if (a11y.ariaDescribedby === null) this._el.removeAttribute('aria-describedby');
-                    else this._el.setAttribute('aria-describedby', a11y.ariaDescribedby);
-                    if (a11y.tabIndex === null) this._el.removeAttribute('tabindex');
-                    else this._el.setAttribute('tabindex', a11y.tabIndex);
+                    const a11y = this._sourceA11yAttrs;
+                    const restoreAttr = (name, value) => {
+                        if (value == null) this._el.removeAttribute(name);
+                        else this._el.setAttribute(name, value);
+                    };
+                    restoreAttr('role', a11y.role);
+                    restoreAttr('aria-modal', a11y.ariaModal);
+                    restoreAttr('aria-labelledby', a11y.ariaLabelledby);
+                    restoreAttr('aria-describedby', a11y.ariaDescribedby);
+                    restoreAttr('tabindex', a11y.tabIndex);
                     this._el.innerHTML = this._sourceHTML;
                 }
                 _registry.delete(this._id);

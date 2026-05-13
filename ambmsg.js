@@ -60,11 +60,11 @@
         }
     };
 
-    const applyVars = (wrapper, cfg) => {
+    const applyVars = (wrapper, cfg, backdrop) => {
         if (cfg.duration) wrapper.style.setProperty('--amb-duration', cfg.duration + 'ms');
         if (cfg.easing) wrapper.style.setProperty('--amb-easing', cfg.easing);
         if (cfg.backdropColor) {
-            const bd = $('.amb-backdrop', wrapper.parentNode) || wrapper.previousElementSibling;
+            const bd = backdrop || $('.amb-backdrop', wrapper.parentNode) || wrapper.previousElementSibling;
             if (bd) bd.style.background = cfg.backdropColor;
         }
     };
@@ -371,7 +371,7 @@
             requestAnimationFrame(() => w.classList.add('amb-show'));
 
             if (cfg.animOpen && cfg.animOpen !== 'none') {
-                applyVars(w, cfg);
+                applyVars(w, cfg, bd);
                 d.classList.add('amb-anim-' + cfg.animOpen);
                 afterAnim(d, () => {
                     d.classList.remove('amb-anim-' + cfg.animOpen);
@@ -443,7 +443,7 @@
             };
 
             if (cfg.animClose && cfg.animClose !== 'none') {
-                applyVars(w, cfg);
+                applyVars(w, cfg, bd);
                 d.classList.add('amb-anim-close-' + cfg.animClose);
                 if (bd) bd.classList.remove('amb-show');
                 afterAnim(d, () => { d.classList.remove('amb-anim-close-' + cfg.animClose); done(); });

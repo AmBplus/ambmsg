@@ -52,6 +52,7 @@
     <p>محتوای مودال اینجاست!</p>
 </div>
 ```
+> نکته: هنگام ساخت مودال از روی HTML، محتوای سورس مخفی بعد از init تخلیه می‌شود تا IDهای داخلی در DOM تکراری نشوند.
 
 ### ۲. مودال و Toast با JavaScript
 
@@ -92,6 +93,7 @@ AmbMsg.open('modal-id', {
     <div class="amb-toast-item" data-amb-toast-type="error" data-amb-toast-msg="ایمیل نادرست است"></div>
 </div>
 ```
+> Note: For HTML-defined modals, source markup content is cleared after init to prevent duplicate internal IDs in the DOM.
 
 ---
 

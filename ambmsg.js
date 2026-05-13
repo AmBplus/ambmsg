@@ -279,6 +279,7 @@
             Object.keys(fromAttr).forEach(k => fromAttr[k] === undefined && delete fromAttr[k]);
 
             this.cfg = merge(DEFAULTS, fromAttr, options);
+            this._sourceHTML = src ? src.innerHTML : null;
             this._visible = false;
             this._autoCloseTimer = null;
             this._trapHandler = null;
@@ -288,6 +289,8 @@
             this._resizeHandler = () => this._applyMobileSize();
 
             this._build();
+            // جلوگیری از ID تکراری بین سورس مخفی و بدنه رندرشده مودال
+            if (this._el) this._el.innerHTML = '';
             _registry.set(this._id, this);
         }
 
@@ -453,6 +456,7 @@
             const removeDOM = () => {
                 if (this._wrapper) this._wrapper.remove();
                 if (this._backdrop) this._backdrop.remove();
+                if (this._el && this._sourceHTML !== null) this._el.innerHTML = this._sourceHTML;
                 _registry.delete(this._id);
                 window.removeEventListener('resize', this._resizeHandler);
             };

@@ -249,6 +249,8 @@ fetch('/api/save', { method: 'POST' })
 | `rtl` | `true` `false` | `false` |
 | `draggable` | `true` `false` | `false` |
 | `autoClose` | milliseconds | `0` |
+| `showHeader` | `true` `false` | `true` |
+| `showCloseIcon` | `true` `false` | `true` |
 
 ---
 

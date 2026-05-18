@@ -80,6 +80,8 @@
         title: '',
         body: '',
         footer: '',
+        showHeader: true,
+        showCloseIcon: true,
         size: 'md',
         position: 'center',
         animOpen: 'zoom-in',
@@ -150,8 +152,8 @@
         wrapper.className = ['amb-wrapper', 'amb-pos-' + pos, themeClass, rtlClass].filter(Boolean).join(' ');
         wrapper.setAttribute('role', 'dialog');
         wrapper.setAttribute('aria-modal', 'true');
-        wrapper.setAttribute('aria-labelledby', id + '-title');
         wrapper.setAttribute('aria-describedby', id + '-body');
+        if (cfg.showHeader !== false) wrapper.setAttribute('aria-labelledby', id + '-title');
         wrapper.tabIndex = -1;
 
         const dialog = document.createElement('div');
@@ -159,36 +161,42 @@
         dialog.tabIndex = -1;
         if (cfg.width) dialog.style.maxWidth = cfg.width;
 
-        const header = document.createElement('div');
-        header.className = 'amb-header';
+        if (cfg.showHeader !== false) {
+            const header = document.createElement('div');
+            header.className = 'amb-header';
 
-        if (cfg.alertType && ICONS.header[cfg.alertType]) {
-            header.classList.add('amb-alert-' + cfg.alertType);
-            const alertIcon = document.createElement('span');
-            alertIcon.className = 'amb-header-icon';
-            alertIcon.innerHTML = ICONS.header[cfg.alertType];
-            header.append(alertIcon);
+            if (cfg.alertType && ICONS.header[cfg.alertType]) {
+                header.classList.add('amb-alert-' + cfg.alertType);
+                const alertIcon = document.createElement('span');
+                alertIcon.className = 'amb-header-icon';
+                alertIcon.innerHTML = ICONS.header[cfg.alertType];
+                header.append(alertIcon);
+            }
+
+            const title = document.createElement('h5');
+            title.className = 'amb-title';
+            title.id = id + '-title';
+            title.innerHTML = cfg.title;
+            header.append(title);
+
+            if (cfg.showCloseIcon !== false) {
+                const closeBtn = document.createElement('button');
+                closeBtn.className = 'amb-close';
+                closeBtn.setAttribute('aria-label', 'Close');
+                closeBtn.innerHTML = ICONS.close;
+                closeBtn.dataset.ambDismiss = 'modal';
+                header.append(closeBtn);
+            }
+
+            dialog.append(header);
         }
-
-        const title = document.createElement('h5');
-        title.className = 'amb-title';
-        title.id = id + '-title';
-        title.innerHTML = cfg.title;
-
-        const closeBtn = document.createElement('button');
-        closeBtn.className = 'amb-close';
-        closeBtn.setAttribute('aria-label', 'Close');
-        closeBtn.innerHTML = ICONS.close;
-        closeBtn.dataset.ambDismiss = 'modal';
-
-        header.append(title, closeBtn);
 
         const body = document.createElement('div');
         body.className = 'amb-body';
         body.id = id + '-body';
         body.innerHTML = cfg.body;
 
-        dialog.append(header, body);
+        dialog.append(body);
 
         if (cfg.footer) {
             const footer = document.createElement('div');
@@ -272,6 +280,8 @@
                 keyboard: hasAttr(src, 'data-amb-keyboard') ? attr(src, 'data-amb-keyboard') !== 'false' : undefined,
                 autoFocus: hasAttr(src, 'data-amb-auto-focus') ? attr(src, 'data-amb-auto-focus') !== 'false' : undefined,
                 autoClose: attr(src, 'data-amb-auto-close') ? +attr(src, 'data-amb-auto-close') : undefined,
+                showHeader: hasAttr(src, 'data-amb-show-header') ? attr(src, 'data-amb-show-header') !== 'false' : undefined,
+                showCloseIcon: hasAttr(src, 'data-amb-show-close-icon') ? attr(src, 'data-amb-show-close-icon') !== 'false' : undefined,
                 draggable: attr(src, 'data-amb-draggable') === 'true',
                 rtl: attr(src, 'data-amb-rtl') === 'true',
                 theme: attr(src, 'data-amb-theme') || undefined,
